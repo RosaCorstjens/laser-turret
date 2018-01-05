@@ -1,42 +1,68 @@
+#define MANUAL_PIN 13			// take over control!! MWOEHAOAHAHA
+#define BUTTON_PIN 5			// push button
+
+#define POT_PIN_HORIZONTAL A0			// manual, horizontal movement turret
+#define POT_PIN_VERTICAL A1				// vertical movement turret
+
 #include <Servo.h>
+#include "Turret.h"
 
-#define LASER_PIN 12
-#define BUTTON_PIN 5
-#define SERVO_PIN_1 9
-#define SERVO_PIN_2 10
-#define POT_PIN_1 A0
-#define POT_PIN_2 A1
+Turret turret;
 
-Servo servo1, servo2;
+// true: manual controlled, false: automatic
+bool manualControlOn;
 
-int varPot1 = 0;
-int varPot2 = 0;
-int lastVarPot1 = 0;
-int lastVarPot2 = 0;
+// input for pot meters
+float potHor = 0;
+float potVert = 0;
+float potHorLast = 0;
+float potVertLast = 0;
 
+/// setup: set all pins to set connections
 void setup() {
-  pinMode(LASER_PIN, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT);
-  servo1.attach(SERVO_PIN_1);
-  servo2.attach(SERVO_PIN_2);
+	pinMode(BUTTON_PIN, INPUT);
+	pinMode(LASER_PIN, OUTPUT);
+
+	turret = Turret();
 }
 
+/// loop: executed every cycle
 void loop() {
-  varPot1 = analogRead(POT_PIN_1);
-  varPot2 = analogRead(POT_PIN_2);
-  varPot1 = map(varPot1, 0, 1023, 0, 180);
-  varPot2 = map(varPot2, 0, 1023, 0, 180);
+	// get values from pot meters
+	potHor = analogRead(POT_PIN_HORIZONTAL);
+	potVert = analogRead(POT_PIN_VERTICAL);
 
-  if(varPot1 == lastVarPot1){
-    servo1.write(varPot1);
-  }
-  
-  if(varPot2 == lastVarPot2){
-    servo2.write(varPot2);
-  }
+	// map to write values
+	// old range: 0-1023 to 0-180 (degree)
+	potHor = map(potHor, 0, 1023, 0, 180);
+	potVert = map(potVert, 0, 1023, 0, 180);
 
-  lastVarPot1 = varPot1;
-  lastVarPot2 = varPot2;
-  digitalWrite(LASER_PIN, digitalRead(BUTTON_PIN));
-  delay(15);
+	// only overwrite if value changed
+	// NOT THE ROTATION, DIRECTLY THE ANGLE
+	if (potHor == potHorLast) turret.UpdateOrientation(potHor, Turret::Horizontal);
+	if (potVert == potVertLast) turret.UpdateOrientation(potVert, Turret::Vertical);
+
+	// capture old values
+	potHorLast = potHor;
+	potVertLast = potVert;
+
+	// handle laser
+	//turret.Shoot();
+
+	/*digitalRead(MANUAL_PIN)*/
+	//if (true) handleManual();
+	//else handleAutomatic();
+
+	// wait to make chip gappy :)
+	delay(15);
+
+	turret.EndCycle();
+}
+
+void handleManual() {
+	
+}
+
+void handleAutomatic() {
+
 }
