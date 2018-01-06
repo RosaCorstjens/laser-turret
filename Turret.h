@@ -4,8 +4,6 @@
 #include <Servo.h>
 #include <Arduino.h>
 
-#define SERVO_PIN_HORIZONTAL 9			// signal servo, horizontal movement
-#define SERVO_PIN_VERTICAL 10			// vertical movement
 #define LASER_PIN 12					// laser on/off shooooot!
 
 class Turret {
@@ -15,25 +13,43 @@ public:
 		Vertical
 	};
 
-	Turret();
+	Turret() {}
+	Turret(Servo servoHor, Servo servoVert);
 	~Turret();
 
-	bool UpdateOrientation(float newOrientation, Axis axis);
-	void Shoot();
+	bool GoToStationairy(float deltatime);
+	void UpdateAutomatic(float deltatime);
 
-	void EndCycle();
-	
-	Servo servoHor;
-	Servo servoVert;
+	bool UpdateOrientation(float newOrientation, Axis axis);
+	void Shoot(float secondsEffect = 0.2f);
+
+	void EndCycle(float deltatime);
+
+	int GetValidOrientation(int orientation, Axis axis);
 
 private:
 	// servo's are for movement (rotations)
+	Servo* servoHor;
+	Servo* servoVert;
 
 	// current orientation
-	int orienHor = 90;
+	float orienHor = 90;
 	int orienVert = 90;
 
+	int minHor = 0;
+	int maxHor = 180;
+	int minVert = 0;
+	int maxVert = 180;
+
 	bool shooting = false;
+	float shootingTime = 0.0f;
 	bool targetDetected = false;
+
+	bool forward = true;
+	float rotationPerSec = 0.1f;
+	bool goingToStationairy = false;
+
+	bool ValidOrientation(int orientation, Axis axis);
+	void RotateOverTime(float deltatime);
 };
 #endif TURRET
