@@ -1,3 +1,4 @@
+#include "Target.h"
 #include <Servo.h>
 #include "Turret.h"
 
@@ -13,7 +14,7 @@
 
 Turret turret;
 
-long startTime, currTime, prevTime, deltaTime;
+float startTime, currTime, prevTime, deltaTime;
 
 // true: manual controlled, false: automatic
 bool manualControlOn;
@@ -40,19 +41,17 @@ void setup() {
 /// loop: executed every cycle
 void loop() {
 	currTime = millis() - startTime;
-	deltaTime = (currTime - prevTime);
+	deltaTime = (currTime - prevTime) / 1000.0f;
 	prevTime = currTime;
 
 	/*digitalRead(MANUAL_PIN)*/
 	if (true) handleAutomatic();
 	else handleManual();
 
+	if (digitalRead(SHOOT_PIN)) turret.Shoot(2.0f);
+
 	// wait to make chip gappy :)
 	delay(15);
-
-	if (digitalRead(SHOOT_PIN)) {
-		turret.Shoot(20.0f);
-	}
 	
 	turret.EndCycle(deltaTime);
 }
@@ -66,13 +65,13 @@ void handleManual() {
 
 	// map to write values
 	// old range: 0-1023 to 0-180 (degree)
-	potHor = turret.MapOrientation(potHor, Turret::Horizontal);
-	potVert = turret.MapOrientation(potVert, Turret::Vertical);
+	potHor = turret.MapOrientation(potHor, 1);
+	potVert = turret.MapOrientation(potVert, 0);
 
 	// only overwrite if value changed
 	// NOT THE ROTATION, DIRECTLY THE ANGLE
-	if (potHor == potHorLast) turret.SetOrientation(potHor, Turret::Horizontal);
-	if (potVert == potVertLast) turret.SetOrientation(potVert, Turret::Vertical);
+	if (potHor == potHorLast) turret.SetOrientation(potHor, 1);
+	if (potVert == potVertLast) turret.SetOrientation(potVert, 0);
 
 	// capture old values
 	potHorLast = potHor;

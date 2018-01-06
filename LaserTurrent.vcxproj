@@ -80,11 +80,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Target.h" />
     <ClInclude Include="Turret.h" />
     <ClInclude Include="__vm\.LaserTurrent.vsarduino.h" />
     <ClInclude Include="__vm\.LaserTurret.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Target.cpp" />
     <ClCompile Include="Turret.cpp" />
   </ItemGroup>
   <PropertyGroup>
