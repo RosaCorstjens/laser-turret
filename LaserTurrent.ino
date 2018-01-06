@@ -58,19 +58,21 @@ void loop() {
 }
 
 void handleManual() {
+	turret.Update();
+
 	// get values from pot meters
 	potHor = analogRead(POT_PIN_HORIZONTAL);
 	potVert = analogRead(POT_PIN_VERTICAL);
 
 	// map to write values
 	// old range: 0-1023 to 0-180 (degree)
-	potHor = turret.GetValidOrientation(potHor, Turret::Horizontal);
-	potVert = turret.GetValidOrientation(potVert, Turret::Vertical);
+	potHor = turret.MapOrientation(potHor, Turret::Horizontal);
+	potVert = turret.MapOrientation(potVert, Turret::Vertical);
 
 	// only overwrite if value changed
 	// NOT THE ROTATION, DIRECTLY THE ANGLE
-	if (potHor == potHorLast) turret.UpdateOrientation(potHor, Turret::Horizontal);
-	if (potVert == potVertLast) turret.UpdateOrientation(potVert, Turret::Vertical);
+	if (potHor == potHorLast) turret.SetOrientation(potHor, Turret::Horizontal);
+	if (potVert == potVertLast) turret.SetOrientation(potVert, Turret::Vertical);
 
 	// capture old values
 	potHorLast = potHor;
